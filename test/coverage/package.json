@@ -1,0 +1,31 @@
+{
+  "name": "02-coverage",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "compile": "tsc",
+    "start": "node -r source-map-support/register dist/hailstone.js",
+    "coverage": "npm run compile && c8 npm start"
+  },
+  "engines": {
+    "node": "^20.2.x"
+  },
+  "devDependencies": {
+    "@types/node": "^20.2.5",
+    "c8": "^9.1.0",
+    "source-map-support": "^0.5.21"
+  },
+  "c8": {
+    "extension": [
+      ".js"
+    ],
+    "exclude": [
+      "coverage/"
+    ],
+    "reporter": [
+      "html",
+      "text"
+    ],
+    "all": true
+  }
+}

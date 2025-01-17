@@ -1,0 +1,21 @@
+{
+  "include": [
+    "./*.ts",
+  ],
+  
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": false, // disabled on ps0 & ps1
+    
+    "target": "esnext",
+    "module": "nodenext",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "outDir": "dist",
+  },
+}
