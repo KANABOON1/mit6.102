@@ -1,9 +1,15 @@
 /**
  * Compute a hailstone sequence.
- * @param n starting number for sequence.  Assumes n > 0.
+ * @param n starting number for sequence.
  * @returns hailstone sequence starting with n and ending with 1.
+ *          undefined if n <= 0
  */
-export function hailstone(n: number): Array<number> {
+export function hailstone(n: number): Array<number> | undefined {
+
+    if (n <= 0) {
+        return undefined;
+    }
+
     let arr: Array<number> = new Array<number>;
     while (n != 1) {
         arr.push(n);
@@ -18,5 +24,6 @@ export function hailstone(n: number): Array<number> {
     return arr;
 }
 
-
-
+function test(arr: Array<number>): number {
+    return 1;
+}

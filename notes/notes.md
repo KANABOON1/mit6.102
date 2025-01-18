@@ -171,3 +171,110 @@ Testing只是validation的一部分, validation是证明程序正确的方式
 1. safe from bugs: 测试可以帮助我们减少bugs
 2. easy to understand: documenting测试可以帮助别人理解test strategy与partition strategy
 3. ready for change: 正确的测试值依赖于spec, ***而不依赖与具体实现***. 同时, 回归测试可以帮助我们在修改代码的时候不至于回退.
+
+
+## 4. Code review
+### Don't repeat yourself
+重复代码可能会导致遗漏更改等问题
+
+### Comment where needed
+1. specification
+2. implementation中的注释: 以代码分段的方式标注, 另外标注一些不明显的地方
+
+### Fail fast
+1. 代码要能够以最快的速度反应外部输入的错误: 静态 > 动态 > 无
+2. implementation中加入错误处理, 而不是返回一个错误的值
+   
+### Magic numbers
+避免出现魔法数字, 使用const常量更好
+
+### One purpose for each variable
+每一个变量只负责一个功能, 不要重用变量
+
+### Use good names
+变量名应该能做到替代对变量本身进行的注释
+
+### Use whitespace and punctuation to help the reader
+
+### Functions should return results
+函数需要返回值, 而不是把结果进行输出(最顶层与人类直接交互的层面可以输出到屏幕).
+Typescript中, 如果一个函数需要返回多个值, 则使用{}结构的方式返回 
+
+### Avoid special-case code   
+尽量不要写特殊情况的处理, 让代码变得通用, 因为特殊处理可能会带来上下处理不一致等问题;
+即使特殊处理能够加速代码, 也先实现一个简洁通用的版本, 然后再考虑优化
+
+## 5. Specifications
+### Behavioral equivalence
+1. 为了能够验证两个module是否是表现等效的, 那么需要写清楚该module的requires和effects, ![spec](img/image4.png)
+   
+### Specification structures
+1. function signature
+2. requires: additional restrictions on the parameters, 对应为前置条件
+3. effects: describing the return value, exceptions, and other effects of the function, 对应为后置条件
+
+### Specifications in Typescript 
+1. 将前述的requires(前置条件)与effects(后置条件)映射至实际Typescript注释如下:
+```Typescript
+/**
+ * Find a value in an array.
+ * @param arr array to search, requires that val occurs exactly once
+ *            in arr
+ * @param val value to search for
+ * @returns index i such that arr[i] = val
+ */
+function find(arr: Array<number>, val: number): number
+```
+2. 注释规范
+   - 参数不再重写类型(function signature中已有), 而是应该简述参数的意义
+   - requires 和 effects 融入到@param和@returns中
+
+### Avoid null
+1. null是一个模糊且容易出错的概念, 并且***不等于"", [], {}等空值***, 在代码中应该避免使用null, 一般约定函数的参数以及返回值不能为null
+2. 空值是可以被大量使用的
+   
+### Testing and specification
+1. 可以根据具体的implementation设计新的test suit, 但是仍然严格认为程序的行为符合spec, 而不是具体的implementation
+2. 构造的测试样例需要严格遵守规范, 并且不用测试invalid输入
+
+### Specifications for mutating functions
+除非在spec中明确说明, 否则认为这个函数不会改变可变值;
+mutating function的spec如下, 将变化写在@param中: ![mutating functions](img/image5.png)
+
+### Exceptions
+0. 注: Typescript中由于没有静态检查异常的机制, 因此不常用exceptions, 用undefined居多, 参考内置的array\map等设计
+1. 当用户输入不符合spec时, 程序应该能够抛出异常, 但是这个异常不应该在spec中提到;
+2. 当用户输入符合spec时, 程序也可能抛出异常, 这时该异常应该要在spec中以@throw的方式说明;
+
+### special results
+1. 由于Typescript缺少对于exception捕获的静态检查(即可能没能捕获由其他函数抛出的异常), 因此容易导致程序崩溃; 因此, 可以采用返回特殊值的办法来避免程序崩溃, 同时undefined也支持静态检查;
+2. Typescript中使用undefined情况较多, 例如array中索引超限会返回undefined, 而不是像py一样抛出exception
+   ```Typescript
+   const zoo = [ 'Tim' ];
+   for (let i = 0; i <= 1; i++) {
+      let name: string = zoo[i];    // zoo1: undefined
+      console.log(`Hello, ${name}!`);
+   }
+   ```
+
+## 6. Design specs
+### Properties of specs
+1. deterministic vs underdeterministic: 
+   - 当module的输入满足spec的要求时, 如果根据spec得到的结果唯一, 则是deterministic的
+   - 否则为underdeterministic
+2. declarative vs operational: 
+   - 如果spec中只给出了返回值的性质以及与输入的关系, 并没有给出计算步骤(不暴露代码), 则为declarative的;
+   - 如果给出了较为详细的计算步骤(伪代码), 则为operational的(错误的写法, 不这么写);
+   - 注: ***使用声明式spec***, 不要使用operationa, 因为这样会不仅使得spec不够简洁, 同时泄露了代码的具体实现, 另外有可能使阅读者产生误解
+3. stronger vs weaker: 该spec是否可以有多种的代码实现方式(注: 不等于暴露代码)
+   - stronger: 该spec对输入的要求较低, 对输出的要求较高, 即该spec有较强的适应性
+   - weaker:  该spec对输入的要求较高, 对输出的要求较低, 即该spec适应性较弱
+   - 满足stronger spec的实现必然可以满足weaker spec
+
+### Spec强度比较 -- 文氏图形式
+如果S1强度高于S2(S1更普适的输入, 更精确的输出 => impl满足S1则必然满足S2), 则满足S2的impl必然可以被满足S1的impl替代 ![strength of specs](img/image6.png)
+
+### Risks of mutation
+1. 输入mutable: 函数有可能在实现中更改输入, 除非特殊说明, 否则函数中的参数是不会被改变的
+2. 输出mutable: 用户可能会后续更改输出, 可能会影响到原函数的功能. 此时如果引入防御性复制, 则又会增加大量内存消耗, 影响程序性能; 如果某一个函数返回了一个可变对象, 会使得实现者与client之间的contract复杂化, 因此尽量返回不可变的对象(例如自己实现一种功能相同的不可变对象) 
+   ![immutable object](img/image7.png)
