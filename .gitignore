@@ -2,4 +2,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,linux,jupyternotebooks,pycharm,pycharm+all,pycharm+iml,pydev,python,pythonvanilla
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,linux,jupyternotebooks,pycharm,pycharm+all,pycharm+iml,pydev,python,pythonvanilla
 
+
 node_modules/
+lib/
+.idea/
+classes/
