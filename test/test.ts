@@ -23,33 +23,3 @@ export function hailstone(n: number): Array<number> | undefined {
     arr.push(n);
     return arr;
 }
-
-class Wallet {
-    private amount: number = 0;
-
-    public loanTo(that: Wallet): void {
-/*A*/         that.amount += this.amount;
-/*B*/         this.amount = 0;
-    }
-}
-
-class Person {
-    private w: Wallet;
-
-    public getNetWorth(): number {
-/*C*/         return this.w.amount;
-    }
-
-    public isBroke(): boolean {
-/*D*/         return Wallet.amount === 0;
-    }
-}
-
-
-function main(): void {
-/*E*/     const w = new Wallet();
-/*F*/     w.amount = 100;
-/*G*/     w.loanTo(w);
-}
-
-main();

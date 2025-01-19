@@ -5,7 +5,6 @@ package twitter;
 
 import static org.junit.Assert.*;
 
-import java.lang.reflect.Array;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Set;
@@ -15,10 +14,6 @@ import org.junit.Test;
 public class ExtractTest {
 
     /*
-     * TODO: your testing strategies for these methods should go here.
-     * See the ic03-testing exercise for examples of what a testing strategy comment looks like.
-     * Make sure you have partitions.
-     *
      * testing strategy for each operation of ExtractTest
      *
      * getTimespan():

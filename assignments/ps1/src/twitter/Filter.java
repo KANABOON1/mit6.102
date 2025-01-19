@@ -3,6 +3,9 @@
  */
 package twitter;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,7 +30,14 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> writtenBy(List<Tweet> tweets, String username) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> tweetList = new ArrayList<>();
+        for (final Tweet tweet: tweets) {
+            if (tweet.getAuthor().equals(username)) {
+                tweetList.add(tweet);
+            }
+        }
+
+        return Collections.unmodifiableList(tweetList);
     }
 
     /**
@@ -41,7 +51,16 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> inTimespan(List<Tweet> tweets, Timespan timespan) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> tweetList = new ArrayList<>();
+        for (final Tweet tweet: tweets) {
+            Instant timeStamp = tweet.getTimestamp();
+
+            if (timeStamp.isAfter(timespan.getStart()) && timeStamp.isBefore(timespan.getEnd())) {
+                tweetList.add(tweet);
+            }
+        }
+
+        return Collections.unmodifiableList(tweetList);
     }
 
     /**
@@ -60,7 +79,25 @@ public class Filter {
      *         same order as in the input list.
      */
     public static List<Tweet> containing(List<Tweet> tweets, List<String> words) {
-        throw new RuntimeException("not implemented");
-    }
 
+        if (tweets == null || words == null) {
+            throw new RuntimeException("tweets is null or words is null");
+        }
+
+        List<Tweet> tweetList = new ArrayList<>();
+
+        for (final Tweet tweet: tweets) {
+            for (final String word: words) {
+                String[] splitWords = tweet.getText().split(" ");
+
+                for (final String sw: splitWords) {
+                    if (sw.equals(word)) {
+                        tweetList.add(tweet);
+                        break;
+                    }
+                }
+            }
+        }
+        return Collections.unmodifiableList(tweetList);
+    }
 }
