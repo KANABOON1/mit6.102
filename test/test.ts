@@ -23,3 +23,8 @@ export function hailstone(n: number): Array<number> | undefined {
     arr.push(n);
     return arr;
 }
+
+const arr: Array<number> = [ 4, 7, 5, 6, 7, 4 ];
+const brr: Array<number> = arr.reverse();
+
+const input = new Map([ ['apple','red'], ['banana','yellow'] ]);
