@@ -76,7 +76,7 @@
 ### Generic types
 ### Enumeration
 
-## Functional programming
+## 10. Functional programming
 > modeling problems and implementing systems with immutable data types and operations that implement pure functions
 
 ### First-class functions
@@ -89,3 +89,26 @@
 ### map/filter/reduction
 1. 使用map, filter and reduction处理Iterable type, 可以跳过复杂的循环过程、中间变量、以及避免直接修改可变对象; 另外, 由于返回值为同类型, 故可以进行链式操作;
 2. 可以使用map, filter, reduction进行类似于python中的列表推导式的操作;
+   
+## 11. Equality
+### Equivalence relation
+1. 即离散数学中的等价关系, 满足: 自反性、对称性、传递性三个主要性质;
+
+### Equality of immutable types
+1. Using the abstract function: 如果两个不可变对象A, B映射到abstract space后值相等, 
+   则说明这两个对象相等, 即$AF(A) == AF(B)$;
+2. Using observation: 如果两个对象的任何Operation的值相等, 则说明两个对象相等;
+3. AF和observation需要保持一致;
+
+### Reference equality vs Value equality
+1. reference equality: 判断两个变量是否指向内存中的同一块空间;
+2. value equality: 判断两个变量是否值相等;
+3. 在自定义ADT时需要自定义eqaulValue函数, 用于判断两个ADT objects是否相等, 需要满足等价关系的三个性质;
+
+### Equality of mutable types
+相对于immutable types, mutable types需要对相等性进行进一步划分, 分为observational equality以及behavioral equality:
+1. observational equality: 两个对象调用不改变其自身状态的方法(observer以及producer)的情况下相等, 相当于调用equalValue()方法;
+2. behavioral equality: 两个对象始终相等, 即使一个对象调用了改变其自身状态的方法, 相当于调用typescript中的'==='对引用进行检查;
+   
+### "Deep equality" on collections
+typescript自身没有实现对于built-in collections的observation equality检查;
