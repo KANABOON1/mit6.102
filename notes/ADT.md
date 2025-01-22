@@ -29,6 +29,10 @@
 4. 解决方案: 
    - 对于immutable: 使用private + readonly, 或者public + readonly
    - 对于mutale: 使用readonly + defensive copying
+5. example:
+   - all fields are private
+   - author is String, so are guaranteed immutable
+   - date is a mutable Date, so some functions make defensive copies to avoid sharing the rep's Date object with clients
 
 ### Rep invariant and abstract function
 1. 设计ADT时的考虑要素: 
@@ -50,7 +54,8 @@
 
 ### Documenting the RI and AF
 1. 需要写好RI, AF, rep exposure safety argument
-2. 示例: ![example of documenting RI, AF and RESA](img/image9.png)
+2. 好的AF需要能够使得表示空间的值到抽象空间的值是单设的;
+3. 示例: ![example of documenting RI, AF and RESA](img/image9.png)
 
 ### ADT invariants replace proconditions
 1. 使用专门设计的ADT代替函数的前置条件![alt text](img/image10.png)
@@ -60,7 +65,7 @@
 2. Test
 3. Implement: 
    - 写清楚该类的private fields(即内部表示), 为rep写注释说明, 包括rep invariant, abstract function以及rep exposure argument; 
-   - Assert rep invariant: 写一个checkRep函数
+   - Assert rep invariant: 写一个checkRep函数, 该函数中使用assert语句即可, 不需要返回true/false
    - Implement operations: 为每一个operation写impl, 注意要在每一个operation中都调用checkRep
 
 ### Writing a program
@@ -69,11 +74,12 @@
 ## 9. Defining ADTs with Interfaces, Generics, Enums, and Functions
 ### Interface
 1. Interface可以仅仅specify the contract for the client, 而不需要具体的实现(rep free)
-2. Interface下可以有很多种对于该Interface的表示方法
+2. Interface下可以有很多种对于该Interface的表示方法, 满足不同情况下的性能需求
 
 ### Subclassing
 
 ### Generic types
+
 ### Enumeration
 
 ## 10. Functional programming
@@ -112,3 +118,51 @@
    
 ### "Deep equality" on collections
 typescript自身没有实现对于built-in collections的observation equality检查;
+
+## 12. Recursive data types
+### Recursive data type definitions
+1. 构造递归的数据类型也需要base case类型和用于递归的类型
+2. 多种数据类型实现一个递归的数据类型: ![recursive Imlist](img/image13.png)
+### Rep independence and rep exposure revisited
+
+### Null vs. empty
+使用哨兵对象来表示空, 而不是使用null或者undefined, 使用哨兵对象可以保证操作在ADT大小上的连续性(即不会因为ADT为空而导致操作不连续)
+
+### Dynamic type inspection
+1. 避免使用instanceof()这样进行动态类型检查, 这样相等于直接使用ADT内部的实现方式进行检查, 这种设计思想不好;
+2. 应该尽量使用这个ADT必然会有的方法, 而不是使用动态类型检查;
+
+### Backtracking search with immutability
+1. 对于上述的Imlist, 可以看到其rest部分是可以被共享的, 而其first部分无法共享, 这样的性质很好, 因为可以记录所有previous部分, 而不必每次都创建一个对象, 这样会消耗大量内存;
+2. Imlist特别适合进行回溯, 因为其previous部分是共享的;
+
+### Immutability and performance
+
+
+## Project2 notes
+### Interface
+1. Interface可以在仅提供一组接口的情况下内置多个实现;
+2. Test for interface: 写完接口spec后, 即开始写test, test写static和instance两种测试, 这两种测试仅仅针对interface, 不针对interface的具体实现;
+
+### Implement ADT
+1. 写好checkRep(): checkRep中使用assert语法即可, 一旦有错立刻终止(fail fast); 
+
+### 函数设计
+1. spec设计, 函数返回值设计, 函数参数设计:
+   ```Java
+   /**
+     * Add, change, or remove a weighted directed edge in this graph.
+     * If weight is nonzero, add an edge or update the weight of that edge;
+     * vertices with the given labels are added to the graph if they do not
+     * already exist.
+     * If weight is zero, remove the edge if it exists (the graph is not
+     * otherwise modified).
+     * 
+     * @param source label of the source vertex
+     * @param target label of the target vertex
+     * @param weight nonnegative weight of the edge
+     * @return the previous weight of the edge, or zero if there was no such
+     *         edge
+     */
+    public int set(L source, L target, int weight);
+   ```
