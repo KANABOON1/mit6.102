@@ -119,6 +119,13 @@
 ### "Deep equality" on collections
 typescript自身没有实现对于built-in collections的observation equality检查;
 
+### Hash functions
+1. 设计原则: 
+   - 等价性: 与equals()一致, 即两个相等对象的hashcode必须相等
+   - 均匀分布: 多使用质数, 减少不同对象哈希码冲突的概率
+   - 不可变性: 
+
+
 ## 12. Recursive data types
 ### Recursive data type definitions
 1. 构造递归的数据类型也需要base case类型和用于递归的类型
