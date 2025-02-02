@@ -1,0 +1,20 @@
+{
+  "name": "12-intexpr",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^20.2.x"
+  },
+  "scripts": {
+    "start": "tsc && node --require source-map-support/register dist/main.js"
+  },
+  "dependencies": {
+    "parserlib": "file:/./lib/parserlib-4.0.0.tgz"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.2.5",
+    "mocha": "^10.2.0",
+    "source-map-support": "^0.5.21"
+  }
+}

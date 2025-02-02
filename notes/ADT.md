@@ -138,14 +138,46 @@ typescript自身没有实现对于built-in collections的observation equality检
 
 ### Immutability and performance
 
+## 13. Grammars and Parsing
+### Grammars
+1. 语法: 用于描述一系列符号构成的字符串, 通过语法, 我们可以判断哪一些字符串是合法的;
+2. 语法的基本元素
+   - 终结符: 不可进一步扩展的元素, 用引号表示, 例如: 'http'
+   - 非终结符: 可以进一步扩展的元素, 即可以由其他的终结符或者非终结符进行定义
+3. 产生式: 语法由一系列产生式或称规则构成, 每一条产生式的格式如下: 
+   - nonterminal ::= expression of terminals, nonterminals, and operators 
+4. 根非终结符: 整个语法所描述的核心, 解析字符串时, 通常从根非终结符开始
+
+### Parse trees
+> Matching a grammar against a string can generate a parse tree that shows how parts of the string correspond to parts of the grammar.
+
+1. 解析树中的内部节点都为非终结节点, 叶节点都为终结节点, 按顺序(前序遍历)连接叶节点得到代表的字符串.
+2. ParseLib中的parse tree: ![Parse Tree](img/image14.png)
+
+### Regular expression
+
+### Constructing an abstract syntax tree
+将parse tree转为抽象语法树
+
+### Parser generators
+1. 解析器的核心流程
+   - 解析: 读取输入的字符串, 并尝试按照文法规则匹配字符串序列
+   - 构建解析树: 解析器将符合文法的部分组织成层次结构的解析树
+   - 生成抽象语法树: 将解析树转为递归数据结构
 
 ## Project2 notes
 ### Interface
 1. Interface可以在仅提供一组接口的情况下内置多个实现;
-2. Test for interface: 写完接口spec后, 即开始写test, test写static和instance两种测试, 这两种测试仅仅针对interface, 不针对interface的具体实现;
+2. 实现Interface的类的在interface中出现的函数可以不用再写spec, 因为spec是不依赖于具体实现的;
+3. Test for interface: 写完接口spec后, 即开始写test, test写static和instance两种测试, 这两种测试仅仅针对interface, 不针对interface的具体实现; 注: test for interface需要使用子test来进行继承, 子test中会测试实现interface的类;
+
+### Design ADT
+1. 任何东西都可以被作为ADT;
+2. 写明ADT的spec, 弄清楚abstract function, rep invariant 以及避免 rep exposure;
 
 ### Implement ADT
 1. 写好checkRep(): checkRep中使用assert语法即可, 一旦有错立刻终止(fail fast); 
+2. 注意在每一个函数中都需要使用checkRep进行检查, rep invaraint 和 fail fast的思想;
 
 ### 函数设计
 1. spec设计, 函数返回值设计, 函数参数设计:
