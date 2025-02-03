@@ -208,3 +208,116 @@ typescript自身没有实现对于built-in collections的observation equality检
      */
     public int set(L source, L target, int weight);
    ```
+
+
+## Project3 notes
+### Recursive data type
+1. 实现了不可变的递归类型Expression(接口), 然后向下定义实现: Constant, Variable, Plus, Times这四种类型
+   ```Java
+   /**
+    * An immutable data type representing a polynomial expression of:
+    *   + and *
+    *   nonnegative integers and floating-point numbers
+    *   variables (case-sensitive nonempty strings of letters)
+    * 
+    * <p>PS3 instructions: this is a required ADT interface.
+    * You MUST NOT change its name or package or the names or type signatures of existing methods.
+    * You may, however, add additional methods, or strengthen the specs of existing methods.
+    * Declare concrete variants of Expression in their own Java source files.
+    */
+   public interface Expression {
+       
+      // Datatype definition
+      //    Expression = Constant(value: double)
+      //                 + Variable(symbol: String)
+      //                 + Plus(leftExpr: Expression, rightExpr: Expression)
+      //                 + Times(leftExpr: Expression, rightExpr: Expression)
+      public static Expression parse(String input) { }
+      public Expression differentiate(String variable);
+      public Expression simplify(Map<String, Double> environment);
+      @Override public String toString();
+      @Override public boolean equals(Object thatObject);
+      @Override public int hashCode();
+   }
+   ```
+2. Expression作为接口, 封装了Constant, Variable, Plus, Times这四种类型的所有操作, 这四种类型对外部用户不可见. 
+3. Constant, Variable, Plus, Times这四种类型共同作用组成一个expression, 并非相互独立的关系.
+
+### Equals and HashCode function
+1. 对于不可变对象, equals需要实现behaviral equality, 即比较abstract values. Hashcode必须与equals函数对齐并且保持不变, 同时尽可能均匀.
+2. 对于可变对象, equals和hashcode均需要比较reference, 即采用默认的即可. 
+
+### ***Antlr, Parse Tree and Abstract Syntax Tree***
+1. 在Expression.g4文件中编写grammar如下:
+   ```
+   root : expr EOF;
+   expr : plusExpr;
+   plusExpr : timesExpr ('+' timesExpr)*;
+   timesExpr : primitive ('*' primitive)*;
+   primitive : LETTER | NUMBER | '(' expr ')';
+   LETTER : [a-zA-Z]+;
+   NUMBER : [0-9]+('.'[0-9]+)?;
+   ```
+   为了显示出'+'和'*'优先级的区别, 最高层用'+', 同时注意'()'的使用. 
+
+2. Antlr编写完毕后, 命令行输入如下:
+   ```
+   cd <root of project>
+   cd src/intexpr/parser
+   java -jar ../../../lib/antlr.jar IntegerExpression.g4
+   ```
+   此时会在parser目录下自动生成一些代码文件
+
+3. Parser使用: 完成上述步骤, 即可使用生成的parser生成parse tree, 并按照顺序进行遍历:
+   ```Java
+   private static ParseTree getParseTree(String input) {
+        CharStream stream = new ANTLRInputStream(input);
+
+        // 得到根据自己编写的grammar file生成的lexer, 并将字符流传入lexer
+        ExpressionLexer lexer = new ExpressionLexer(stream);
+        lexer.reportErrorsAsExceptions();  // 若有错误, 转为异常抛出
+        TokenStream tokens = new CommonTokenStream(lexer);
+
+        // 将终结符流传递给语法分析器, parser将为每一个非终结符生成一个方法
+        ExpressionParser parser = new ExpressionParser(tokens);
+        parser.reportErrorsAsExceptions();
+
+        return parser.root();    // 生成root的解析树
+   }
+
+   public static Expression parse(String input) {   // 通过静态方法的形式隐藏掉内部实现
+
+        // 将string, reader, inputStream 转化为字符流, 为接下来输入至lexer进行准备
+        ParseTree tree = getParseTree(input);
+
+        // 遍历解析树
+        ParseTreeWalker walker = new ParseTreeWalker();      // 创建解析树遍历器
+        ExpressionListener listener = new PrintEverything(); // 自定义监听器
+        walker.walk(listener, tree);
+
+        // 遍历解析树, 得到表达式
+        MakeExpression exprMaker = new MakeExpression();
+        new ParseTreeWalker().walk(exprMaker, tree);
+        return exprMaker.getExpression();
+   }
+   ```
+4. 如果想要根据parse tree生成abstract syntax tree, 则需要自定义监听器。通过在遍历parse tree的时候将子树的expression存入栈的方式解析出Expression value.
+   ```Java 
+   class MakeExpression implements ExpressionListener {
+      private final Stack<Expression> stack = new Stack<>();
+      // Invariant:
+      // stack中存储了那些已经被遍历完毕的但是其父节点尚未被退出的子树的Expression value,
+      // 由于栈的LIFO性质, 因此栈顶元素是刚刚遍历完的子树形成的Expression value.
+      //
+      // 在walk的开始, 栈为空;
+      //
+      // 当从一个节点退出时, 其子节点对应的Expression value必然是stack的最上方的c个,
+      // 因此需要将这些子节点弹出, 计算出一个新值再存入栈中;
+      //
+      // 当walk结束时, 只有root节点满足: "fully walked but parent not yet exited"性质,
+      // 因此只有root元素的Expression value会在栈顶, 这就是 expression of the entire parse tree.
+   }
+   ```
+
+### Instanceof
+1. 避免使用instanceof, 因为这样相当于限定死了动态类型, 限制代码的可扩展性. 应该使用helper function的方式让实现Expression接口的类都各自调用其helper function替代instanceof. [参考此处Matrix Expression实现](https://ocw.mit.edu/ans7870/6/6.005/s16/classes/16-recursive-data-types/matexpr/)

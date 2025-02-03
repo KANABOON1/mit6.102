@@ -30,7 +30,8 @@ import java.util.Stack;
 public interface Expression {
     
     // Datatype definition
-    //    Expression = Variable(symbol: String)
+    //    Expression = Constant(value: double)
+    //                 + Variable(symbol: String)
     //                 + Plus(leftExpr: Expression, rightExpr: Expression)
     //                 + Times(leftExpr: Expression, rightExpr: Expression)
     
