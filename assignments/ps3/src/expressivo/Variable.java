@@ -1,5 +1,7 @@
 package expressivo;
 
+import java.util.Map;
+
 /**
  * 代表expression中的变量, 是expression的最小单元
  */
@@ -8,7 +10,7 @@ public class Variable implements Expression {
     private final String symbol;
 
     // Abstract function:
-    //   AF(symbol) = a variable in an expression
+    //   AF(symbol, value) = a variable of some value(non-negative) in an expression
     // Rep invariant:
     //   true
 
@@ -20,6 +22,29 @@ public class Variable implements Expression {
      */
     public Variable(String symbol) {
         this.symbol = symbol;
+    }
+
+    @Override
+    public boolean isVariable() {
+        return true;
+    }
+
+    @Override
+    public Expression differentiate(String variable) {
+        if (this.symbol.equals(variable)) {
+            return new Constant(1);
+        }
+        else {
+            return new Constant(0);
+        }
+    }
+
+    @Override
+    public Expression simplify(Map<String, Double> environment) {
+        if (environment.containsKey(this.symbol)) {
+            return new Constant(environment.get(this.symbol));
+        }
+        return this;
     }
 
     @Override

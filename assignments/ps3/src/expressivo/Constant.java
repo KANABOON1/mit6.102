@@ -1,5 +1,6 @@
 package expressivo;
 import java.text.DecimalFormat;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -22,6 +23,27 @@ public class Constant implements Expression {
      */
     public Constant(double num) {
         this.value = num;
+    }
+
+    /**
+     * @return the value of the constant
+     */
+    public double getValue() {
+        return value;
+    }
+
+    public boolean isConstant() {
+        return true;
+    }
+
+    @Override
+    public Expression differentiate(String variable) {
+        return new Constant(0);
+    }
+
+    @Override
+    public Expression simplify(Map<String, Double> environment) {
+        return this;
     }
 
     /**

@@ -102,8 +102,8 @@ public class ExpressionTest {
     public void testParse() {
 
         // partition1: simple expr
-        String simpleStr = "a";
-        Expression simpleExpr = new Variable(simpleStr);
+        String simpleStr = "(((a)))";
+        Expression simpleExpr = new Variable("a");
         assertEquals("Simple expression parse.", simpleExpr, Expression.parse(simpleStr));
 
         // partition2: composite expr
@@ -120,7 +120,7 @@ public class ExpressionTest {
         assertEquals("Composite expression parse test2.", plusExpr2, Expression.parse(compositeStr2));
 
         String compositeStr3 = "x + x + x + x * x";
-
+        System.out.println(Expression.parse(compositeStr3));
     }
 
 }

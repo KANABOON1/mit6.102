@@ -123,7 +123,10 @@ typescript自身没有实现对于built-in collections的observation equality检
 1. 设计原则: 
    - 等价性: 与equals()一致, 即两个相等对象的hashcode必须相等
    - 均匀分布: 多使用质数, 减少不同对象哈希码冲突的概率
-   - 不可变性: 
+   - 不可变性: 因为我们只需要对不可变对象定义hashcode函数, 故hashcode值在该不可变对象的声明周期中也需要保持不变, 因此当hashcode计算复杂度较高时, 可以采取先计算一次然后缓存(即存入一个变量中)的方式降低时间复杂度.
+
+### Equals and HashCode function Design
+![Equals and HashCode function Design](img/image15.png)
 
 
 ## 12. Recursive data types
@@ -136,7 +139,7 @@ typescript自身没有实现对于built-in collections的observation equality检
 使用哨兵对象来表示空, 而不是使用null或者undefined, 使用哨兵对象可以保证操作在ADT大小上的连续性(即不会因为ADT为空而导致操作不连续)
 
 ### Dynamic type inspection
-1. 避免使用instanceof()这样进行动态类型检查, 这样相等于直接使用ADT内部的实现方式进行检查, 这种设计思想不好;
+1. 避免使用instanceof()这样进行动态类型检查, 否则导致代码可读性、扩展性差, 除了equals()以外都需要额外在类以及子类上定义helper functions来避免;![Avoid instancof](img/image16.png)
 2. 应该尽量使用这个ADT必然会有的方法, 而不是使用动态类型检查;
 
 ### Backtracking search with immutability

@@ -13,6 +13,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -39,7 +40,7 @@ public interface Expression {
      * @return expression AST for the input
      * @throws IllegalArgumentException if the expression is invalid
      */
-    public static Expression parse(String input) {
+    public static Expression parse(String input) {   // 通过静态方法的形式隐藏掉内部实现
 
         // 将string, reader, inputStream 转化为字符流, 为接下来输入至lexer进行准备
         ParseTree tree = getParseTree(input);
@@ -71,6 +72,23 @@ public interface Expression {
     }
 
     /**
+     * Differentiate the expression with respect to the variable, not in the simplest form.
+     * @param variable the variable to differentiate by, a case-sensitive nonempty string of letters.
+     * @return the differentiated expression but not in the simplest form.
+     */
+    public Expression differentiate(String variable);
+
+    /**
+     * Substitute the values for those variables into the expression, and simplify the substituted polynomial.
+     * @param environment a map between the variables in the environment and their values.
+     *                    The set of variables in the environment is allowed to be different
+     *                    than the set of variables actually found in the expression.
+     * @return a simplified expression. If the substituted polynomial is a constant expression, with no variables remaining,
+     *         then simplification must reduce it to a single number.
+     */
+    public Expression simplify(Map<String, Double> environment);
+
+    /**
      * @return a parsable representation of this expression, such that
      * for all e:Expression, e.equals(Expression.parse(e.toString())).
      * And the representation must follow these rules:
@@ -97,9 +115,20 @@ public interface Expression {
      */
     @Override
     public int hashCode();
-    
-    // TODO more instance methods
-    
+
+    /**
+     * @return whether the expression is a constant
+     */
+    default boolean isConstant() {  // 使用helper function 避免使用instanceof
+        return false;
+    }
+
+    /**
+     * @return whether the expression is a variable
+     */
+    default boolean isVariable() {  // 使用helper function 避免使用instanceof
+        return false;
+    }
 }
 
 // Make an Expression value from the parse tree

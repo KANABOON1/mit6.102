@@ -24,7 +24,15 @@ public class Commands {
      * @throws IllegalArgumentException if the expression or variable is invalid
      */
     public static String differentiate(String expression, String variable) {
-        throw new RuntimeException("unimplemented");
+        Expression exp, res;
+        try {
+            exp = Expression.parse(expression);
+            res = exp.differentiate(variable);
+        } catch (RuntimeException re) {
+            throw new IllegalArgumentException("The expression or variable is invalid.");
+        }
+
+        return res.toString();
     }
     
     /**
@@ -40,7 +48,14 @@ public class Commands {
      * @throws IllegalArgumentException if the expression is invalid
      */
     public static String simplify(String expression, Map<String,Double> environment) {
-        throw new RuntimeException("unimplemented");
+        Expression exp;
+        try {
+            exp = Expression.parse(expression);
+        } catch (RuntimeException re) {
+            throw new IllegalArgumentException("The expression is invalid.");
+        }
+
+        return exp.simplify(environment).toString();
     }
     
 }
